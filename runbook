@@ -1,0 +1,24 @@
+#!/bin/bash
+
+PYBIN="${HOME}/.virtualenvs/demo/bin"
+
+if [ ! -d ~/.virtualenvs/demo ]; then
+    mkdir -p ~/.virtualenvs
+    python3 -m venv ~/.virtualenvs/demo
+    "${PYBIN}"/pip install -U pip
+    "${PYBIN}"/pip install -r requirements.txt
+fi
+
+if [ ! -f ~/.ssh/aws-sydney-demo ]; then
+    ssh-key ssh-keygen -f ~/.ssh/aws-sydney-demo -N ""
+fi
+
+"${PYBIN}"/python cli.py vpc --action create
+"${PYBIN}"/python cli.py subnet --action create
+"${PYBIN}"/python cli.py igw --action create
+"${PYBIN}"/python cli.py igw --action attach
+"${PYBIN}"/python cli.py route_table --action create
+"${PYBIN}"/python cli.py route_table --action associate_subnet
+"${PYBIN}"/python cli.py route_table --action add_route
+"${PYBIN}"/python cli.py security_group --action create
+
